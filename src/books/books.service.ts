@@ -7,10 +7,11 @@ import { Model, Types } from 'mongoose';
 import { CatchErrors } from 'src/common/decorators/catch-errors.decorator';
 import { QueryDto } from './dto/query.dto';
 import { ExceptionHandlerService } from 'src/common/services/error-database-handler.service';
+import { IBookService } from './interfaces/book-service.interface';
 
 @Injectable()
 @CatchErrors()
-export class BooksService {
+export class BooksService implements IBookService{
   constructor(
     @InjectModel(Books.name) private readonly booksModel: Model<Books>,
     private readonly loggerService: Logger,

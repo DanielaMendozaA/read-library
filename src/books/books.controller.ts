@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, NotFoundException, Logger } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, NotFoundException, Logger, UseGuards, Inject } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
@@ -9,13 +9,16 @@ import { ParseMongoIdPipe } from 'src/common/pipes/parse-mongo-id.pipe';
 import { Types } from 'mongoose';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { DeleteResponseDto } from './dto/delete-response.dto';
+import { ApiKeyGuard } from 'src/guard/api-key-guard.guard';
+import { IBookService } from './interfaces/book-service.interface';
 
 @Controller('books')
 @ApiTags('Books')
 @ApiExtraModels(BookResponseDto)
 export class BooksController {
   constructor(
-    private readonly booksService: BooksService,
+    @Inject('IBookService')
+    private readonly booksService: IBookService
   ) { }
 
   @ApiDocCreateBook(BookResponseDto)
@@ -27,6 +30,7 @@ export class BooksController {
   @ApiDocGetAllBooks(BookResponseDto)
   @ApiQueryBooks()
   @Get()
+  @UseGuards(ApiKeyGuard)
   findAll(@Query() queryDto: QueryDto) {
     return this.booksService.findAllByQuerys(queryDto);
   }

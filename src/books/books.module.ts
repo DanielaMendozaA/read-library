@@ -11,7 +11,10 @@ import { CommonModule } from 'src/common/common.module';
     CommonModule
   ],
   controllers: [BooksController],
-  providers: [BooksService, Logger],
-  exports: [BooksService, MongooseModule],
+  providers: [ {
+    provide: 'IBookService',
+    useClass: BooksService,
+  }, Logger],
+  exports: ['IBookService', MongooseModule],
 })
 export class BooksModule {}

@@ -6,6 +6,7 @@ import { JoiValidation } from './common/config/joi-validation.config';
 import { BooksModule } from './books/books.module';
 import { CommonModule } from './common/common.module';
 import { BookSeeder } from './common/seeders/book.seeder.service';
+import { ApiKeyGuard } from './guard/api-key-guard.guard';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,7 +24,7 @@ import { BookSeeder } from './common/seeders/book.seeder.service';
     BooksModule,
     CommonModule
   ],
-  providers: [BookSeeder, Logger],
+  providers: [BookSeeder, Logger, ApiKeyGuard],
 })
 export class AppModule implements OnModuleInit {
   constructor(
