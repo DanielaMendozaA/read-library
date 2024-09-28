@@ -1,26 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Books } from './schemas/book.schema';
+import { Model } from 'mongoose';
+import { CatchErrors } from 'src/common/decorators/catch-errors.decorator';
+import { QueryDto } from './dto/query.dto';
 
 @Injectable()
+@CatchErrors()
 export class BooksService {
-  create(createBookDto: CreateBookDto) {
-    return 'This action adds a new book';
+  constructor(
+    @InjectModel(Books.name) private readonly booksModel: Model<Books>,
+  ) {}
+
+  async create(createBookDto: CreateBookDto): Promise<Books> {
+    const createdBook = new this.booksModel(createBookDto);
+    return createdBook.save();
   }
 
-  findAll() {
-    return `This action returns all books`;
-  }
+  async findAllByQuerys(queryDto: QueryDto): Promise<Books[]> {
+    const { author, title, category, publicationDate, publishedAfter, limit = 10, offset = 0 } = queryDto;
 
-  findOne(id: number) {
-    return `This action returns a #${id} book`;
-  }
+    const filters: any = {};
+    if(title)
+      filters.title = { $regex: title, $options: 'i' };
 
-  update(id: number, updateBookDto: UpdateBookDto) {
-    return `This action updates a #${id} book`;
-  }
+    if(author)
+      filters.author = { $regex: author, $options: 'i' };
 
-  remove(id: number) {
-    return `This action removes a #${id} book`;
+    if(category)
+      filters.categories = { $in:[ category ] };
+
+    if(publicationDate)
+      filters.publicationDate = publicationDate;
+
+    if(publishedAfter)
+      filters.publicationDate = { $gte: publishedAfter };
+
+    const skip = offset;
+
+    const query = this.booksModel
+    .find(filters)
+    .limit(Number(limit))
+    .skip(skip)
+    .sort({ author: -1 });
+
+    return query.exec();
+
   }
 }
