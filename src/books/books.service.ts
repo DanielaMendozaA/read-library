@@ -1,17 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Get, Logger, NotFoundException } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { UpdateBookDto } from './dto/update-book.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Books } from './schemas/book.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CatchErrors } from 'src/common/decorators/catch-errors.decorator';
 import { QueryDto } from './dto/query.dto';
+import { ExceptionHandlerService } from 'src/common/services/error-database-handler.service';
 
 @Injectable()
 @CatchErrors()
 export class BooksService {
   constructor(
     @InjectModel(Books.name) private readonly booksModel: Model<Books>,
+    private readonly loggerService: Logger,
+    private readonly exceptionHandlerService: ExceptionHandlerService
   ) {}
 
   async create(createBookDto: CreateBookDto): Promise<Books> {
@@ -49,4 +52,15 @@ export class BooksService {
     return query.exec();
 
   }
+
+  async GetById(id: Types.ObjectId): Promise<Books> {
+    const book = await this.booksModel.findById(id);
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+    return book;
+
+  }
+
+
 }
