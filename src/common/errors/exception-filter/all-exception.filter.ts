@@ -9,6 +9,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
+
     const status =
       exception instanceof HttpException
         ? exception.getStatus()
@@ -19,18 +20,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getResponse()
         : 'Internal server error';
 
-    if (!(exception as any).isHandled) {
-      this.logger.error(
-        JSON.stringify({
-          statusCode: status,
-          timestamp: new Date().toISOString(),
-          path: request.url,
-          method: request.method,
-          message: typeof message === 'string' ? message : (message as any).message,
-          clientIp: request.ip,
-        }),
-      );
-    }
+    this.logger.error(
+      JSON.stringify({
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        method: request.method,
+        message: typeof message === 'string' ? message : (message as any).message,
+        clientIp: request.ip,
+      }),
+    );
 
     response.status(status).json({
       statusCode: status,

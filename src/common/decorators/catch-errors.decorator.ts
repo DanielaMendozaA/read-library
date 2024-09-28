@@ -1,6 +1,5 @@
-import { Injectable, HttpException, Logger } from '@nestjs/common';
+import { Injectable, HttpException, Logger, NotFoundException } from '@nestjs/common';
 import { ExceptionHandlerService } from '../services/error-database-handler.service';
-
 
 export function CatchErrors() {
   return function (constructor: Function) {
@@ -29,19 +28,15 @@ export function CatchErrors() {
           } catch (error) {
             console.log("error desde decorator", error);
 
-            if (!exceptionHandlerService) {
-              console.error('ExceptionHandlerService no está disponible en el contexto');
-            }
-            if (!loggerService) {
-              console.error('LoggerService no está disponible en el contexto');
-            }
-
-
             loggerService.error(`Error in ${className}.${name}: ${error.message}`);
+
+            if (error instanceof HttpException) {
+              throw error;
+            }
 
             const handledError = exceptionHandlerService.handleDatabaseError(error);
 
-            throw handledError instanceof HttpException ? handledError : new HttpException(error.message || 'Internal server error desde aqui', 500);
+            throw handledError instanceof HttpException ? handledError : new HttpException(error.message || 'Internal server error', 500);
           }
         };
 
@@ -54,5 +49,3 @@ export function CatchErrors() {
     }
   };
 }
-
-
