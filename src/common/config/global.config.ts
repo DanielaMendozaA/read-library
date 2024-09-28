@@ -15,5 +15,5 @@ export const setupGlobalConfig = (app: INestApplication<any>) => {
       enableImplicitConversion: true,
     },
   }));
-  // app.useGlobalFilters(new AllExceptionsFilter(), new ValidationExceptionFilter());
+  app.useGlobalFilters(new AllExceptionsFilter(), new ValidationExceptionFilter());
 };
