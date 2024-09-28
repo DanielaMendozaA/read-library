@@ -3,7 +3,8 @@ import { ApiBody, ApiOperation, ApiQuery } from "@nestjs/swagger";
 
 
 import { CreateBookDto } from "src/books/dto/create-book.dto";
-import { ApiBadRequest, ApiCreated, ApiSuccessResponsesArray } from "src/common/decorators/swagger.decorator";
+import { ApiBadRequest, ApiCreated, ApiNotFound, ApiSuccessResponses, ApiSuccessResponsesArray } from "src/common/decorators/swagger.decorator";
+import { UpdateBookDto } from "../dto/update-book.dto";
 
 
 export function ApiDocGetAllBooks <T> (entity: Type<T>) {
@@ -42,7 +43,8 @@ export function ApiDocGetBookById <T> (entity: Type<T>) {
             summary: 'Get a book by id',
             description: 'Get a book by its id',
         }),
-        ApiSuccessResponsesArray(entity),
+        ApiSuccessResponses(entity),
+        ApiNotFound(),
         ApiBadRequest()
     );
 }
@@ -58,3 +60,18 @@ export function ApiQueryBooks() {
       ApiQuery({ name: 'offset', required: false, type: Number }),
     );
   }
+
+export function ApiDocUpdateBook <T> (entity: Type<T>) {
+    return applyDecorators(
+        ApiOperation({
+            summary: 'Update a book',
+            description: 'Update a book in the library',
+        }),
+        ApiBody({
+            type: UpdateBookDto
+        }),
+        ApiSuccessResponses(entity),
+        ApiNotFound(),
+        ApiBadRequest()
+    );
+}

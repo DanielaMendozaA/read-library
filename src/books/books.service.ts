@@ -47,7 +47,7 @@ export class BooksService {
     .find(filters)
     .limit(Number(limit))
     .skip(skip)
-    .sort({ author: -1 });
+    .sort({ author: 1 });
 
     return query.exec();
 
@@ -60,6 +60,17 @@ export class BooksService {
     }
     return book;
 
+  }
+
+  async update(id: Types.ObjectId, updateBookDto: UpdateBookDto): Promise<Books> {
+    const book = await this.booksModel.findByIdAndUpdate({ _id: id }, updateBookDto, { new: true });
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+
+    return book;
+  
+  
   }
 
 
