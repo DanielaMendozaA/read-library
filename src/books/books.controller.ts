@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, NotFoundException, Logger, UseGuards, Inject } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiParam, ApiTags } from '@nestjs/swagger';
 import { BookResponseDto } from './dto/book-response.dto';
 import { ApiDocCreateBook, ApiDocDeleteBook, ApiDocGetAllBooks, ApiDocGetBookById, ApiDocUpdateBook, ApiQueryBooks } from 'src/books/decorators/books.swagger.decorator';
 import { QueryDto } from './dto/query.dto';
@@ -36,19 +36,36 @@ export class BooksController {
   }
 
   @ApiDocGetBookById(BookResponseDto)
+  @ApiParam({
+    name: 'id',
+    description: 'MongoDB ObjectId of the book',
+    type: String,
+    example: '66f83df2a71a1180fda8b8b9',
+  })
   @Get(':id')
   findOne(@Param('id', ParseMongoIdPipe) id: Types.ObjectId) {
     return this.booksService.GetById(id);
-
   }
 
   @ApiDocUpdateBook(BookResponseDto)
+  @ApiParam({
+    name: 'id',
+    description: 'MongoDB ObjectId of the book',
+    type: String,
+    example: '66f83df2a71a1180fda8b8b9', 
+  })
   @Patch(':id')
   update(@Param('id', ParseMongoIdPipe) id: Types.ObjectId, @Body() updateBookDto: UpdateBookDto) {
     return this.booksService.update(id, updateBookDto);
   }
 
   @ApiDocDeleteBook(DeleteResponseDto)
+  @ApiParam({
+    name: 'id',
+    description: 'MongoDB ObjectId of the book',
+    type: String,
+    example: '66f83df2a71a1180fda8b8b9',
+  })
   @Delete(':id')
   remove(@Param('id', ParseMongoIdPipe) id: Types.ObjectId) {
     return this.booksService.remove(id);
