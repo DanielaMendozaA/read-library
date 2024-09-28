@@ -73,5 +73,31 @@ export class BooksService {
   
   }
 
+  // async remove(id: Types.ObjectId){
+  //   const deletedRows = await this.booksModel.deleteOne({ _id: id });
+  //   console.log(deletedRows);
+  //   if(deletedRows.deletedCount === 0){
+  //     throw new NotFoundException('Book not found');
+  //   }
 
-}
+  //   return deletedRows;
+
+
+  // }
+
+  async remove(id: Types.ObjectId): Promise<Books> {
+    const book = await this.booksModel.findOneAndUpdate(
+      { _id: id },
+      { isDeleted: true, deletedAt: new Date() },
+      { new: true },
+    );
+    
+    if (!book) {
+      throw new NotFoundException('Book not found');
+    }
+
+    return book;
+  }
+
+
+} 

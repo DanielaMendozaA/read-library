@@ -75,3 +75,18 @@ export function ApiDocUpdateBook <T> (entity: Type<T>) {
         ApiBadRequest()
     );
 }
+
+export function ApiDocDeleteBook<T> (entity: Type<T>) {
+    return applyDecorators(
+        ApiOperation({
+            summary: 'Delete a book',
+            description: 'Delete a book in the library',
+        }),
+        ApiSuccessResponses(entity),
+        ApiNotFound(),
+        ApiBadRequest()
+    );
+
+
+
+}
